@@ -7,7 +7,7 @@ loads json array into a table, sorts entries by selected field, highlights and d
 ## Running locally
 
 - `git clone` or download this repository
-- `cd in-progress-SPA-table` or `cd in-progress-SPA-table-master`
+- `cd in-progress-react-SPA-table` or `cd in-progress-react-SPA-table-master`
 - `npm install`
 - run in dev mode: `npm run dev`
 - run in prod mode: `npm run prod`
