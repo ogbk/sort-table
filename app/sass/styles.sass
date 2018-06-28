@@ -1,0 +1,66 @@
+// sass-lint:disable nesting-depth
+// sass-lint:disable no-vendor-prefixes
+
+$sort-bar-color: #ffa500 // orange
+$red: #f00
+$border-color: #999
+$clicked-row-color: #0f0 // blue
+
+body
+  font-family: sans-serif
+
+.click
+  cursor: pointer
+
+.selected-sort-bar
+  background: $sort-bar-color
+
+.clicked-row
+  background-color: $clicked-row-color
+
+h2
+  font-size: 25px
+
+h4
+  font-size: 20px
+
+#app  // sass-lint:disable-line no-ids
+  margin: 20px
+
+  table,
+  div
+    display: inline-block
+    vertical-align: middle
+
+  table
+    width: 260px
+
+    td,
+    th
+      border: 1px solid $border-color
+      padding: .2rem
+      text-align: left
+
+    caption
+      color: $red
+      padding: .5rem
+
+    tbody
+      tr
+
+        &:hover
+          background-color: $clicked-row-color
+
+        td
+
+          &:nth-child(1)
+            width: 40px
+
+          &:nth-child(2)
+            width: 100px
+
+          &:nth-child(3)
+            width: 100px
+
+  div
+    margin-left: 50px
