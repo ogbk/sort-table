@@ -1,9 +1,9 @@
 import React from 'react';
 import { render } from 'react-dom';
 
-import App from './components/App';
+import App from './App';
 
-require('./sass/styles.sass');
+import('../sass/styles.sass');
 
 const fields = [
   'id', 'field1', 'field2',

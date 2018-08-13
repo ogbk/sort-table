@@ -1,5 +1,5 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import { string, shape } from 'prop-types';
 
 const Preview = ({ row }) => (
   <div id="preview">
@@ -14,9 +14,9 @@ const Preview = ({ row }) => (
 export default Preview;
 
 Preview.propTypes = {
-  row: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    field1: PropTypes.string.isRequired,
-    field2: PropTypes.string.isRequired,
+  row: shape({
+    id: string.isRequired,
+    field1: string.isRequired,
+    field2: string.isRequired,
   }).isRequired,
 };

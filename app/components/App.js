@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import { string, shape, arrayOf, oneOf, bool } from 'prop-types';
 import Preview from './Preview';
 import { mySortArr } from '../utils/sortAlphaNum';
 
@@ -102,9 +102,8 @@ export default class App extends Component {
           </tbody>
         </table>
         {
-          !(this.state.selectedRow) ?
-            null :
-            <Preview row={this.state.selectedRow} />
+          this.state.selectedRow &&
+          <Preview row={this.state.selectedRow} />
         }
       </div>
     );
@@ -113,14 +112,14 @@ export default class App extends Component {
 
 
 App.propTypes = {
-  data: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      field1: PropTypes.string.isRequired,
-      field2: PropTypes.string.isRequired,
+  data: arrayOf(
+    shape({
+      id: string.isRequired,
+      field1: string.isRequired,
+      field2: string.isRequired,
     }),
   ).isRequired,
-  fields: PropTypes.arrayOf(PropTypes.string).isRequired,
-  sortKey: PropTypes.oneOf(['id', 'field1', 'field2']).isRequired,
-  defaultSortAsc: PropTypes.bool.isRequired,
+  fields: arrayOf(string).isRequired,
+  sortKey: oneOf(['id', 'field1', 'field2']).isRequired,
+  defaultSortAsc: bool.isRequired,
 };
