@@ -21,7 +21,8 @@ type State = {
   sortKey: string,
   sortAsc: boolean,
   data: Array<Fields>,
-  selectedRow: any,
+  showRowData: boolean,
+  selectedRow: Fields,
   selectedRowId: string,
   ascSymbol: string,
   descSymbol: string,
@@ -30,16 +31,17 @@ type State = {
 };
 
 export default class App extends Component<Props, State> {
-  handleSelectedRow: (any) => void;
   handleSort: (string) => void;
+  handleSelectedRow: (Fields) => void;
 
-  constructor({ sortKey, sortAsc, data }) {
+  constructor({ sortKey, sortAsc, data }: Props) {
     super();
     this.state = {
       sortKey,
       sortAsc,
       data: sortObjects(data, sortKey, sortAsc),
-      selectedRow: null,
+      showRowData: false,
+      selectedRow: {},
       selectedRowId: '',
       ascSymbol: '\u25B2',
       descSymbol: '\u25BC',
@@ -50,7 +52,7 @@ export default class App extends Component<Props, State> {
     this.handleSelectedRow = this.handleSelectedRow.bind(this);
   }
 
-  handleSort(chosenSortKey) {
+  handleSort(chosenSortKey: string): void {
     const newSortKey = chosenSortKey;
 
     // set to default values
@@ -84,8 +86,9 @@ export default class App extends Component<Props, State> {
     });
   }
 
-  handleSelectedRow(row) {
+  handleSelectedRow(row: Fields): void {
     this.setState({
+      showRowData: true,
       selectedRow: row,
       selectedRowId: row.id,
     });
@@ -97,6 +100,7 @@ export default class App extends Component<Props, State> {
       sortKey: stateSortKey,
       sortSymbol: stateSortSymbol,
       data: stateData,
+      showRowData: stateShowRowData,
       selectedRow: stateSelectedRow,
       selectedRowId: stateSelectedRowId,
     } = this.state;
@@ -111,10 +115,10 @@ export default class App extends Component<Props, State> {
                 propsFields.map(fieldName => (
                   <th
                     key={`th_${fieldName}`}
-                    className={stateSortKey === fieldName ? 'click selected-sort-bar' : 'click'}
+                    className={fieldName === stateSortKey ? 'click selected-sort-bar' : 'click'}
                     onClick={() => { this.handleSort(fieldName); }}
                   >
-                    {fieldName} {stateSortKey === fieldName ? stateSortSymbol : ' '}
+                    {fieldName} {fieldName === stateSortKey ? stateSortSymbol : ' '}
                   </th>
                 ))
               }
@@ -127,7 +131,7 @@ export default class App extends Component<Props, State> {
                 return (
                   <tr
                     key={`row_${rowId}`}
-                    className={stateSelectedRowId === (rowId) ? 'click clicked-row' : 'click'}
+                    className={rowId === stateSelectedRowId ? 'click clicked-row' : 'click'}
                     onClick={() => { this.handleSelectedRow(row); }}
                   >
                     {
@@ -142,7 +146,7 @@ export default class App extends Component<Props, State> {
           </tbody>
         </table>
         {
-          stateSelectedRow &&
+          stateShowRowData &&
           <Preview rowData={stateSelectedRow} />
         }
       </div>
