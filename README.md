@@ -1,8 +1,8 @@
-# react-table
+# sort-table
 
 SPA web page:
 - loads json data into a table
-- sorts data rows by selected field
+- sorts data rows by selected field (uses helper function `app/utils/sortAlphaNum.js`)
 - highlights and displays selected row
 
 
