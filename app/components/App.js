@@ -1,20 +1,49 @@
+// @flow
+
 import React, { Component } from 'react';
-import { string, shape, arrayOf, oneOf, bool } from 'prop-types';
 import Preview from './Preview';
 import { sortObjects } from '../utils/sortAlphaNum';
 
-export default class App extends Component {
-  constructor({ sortKey, defaultSortAsc, data }) {
+export type Fields = {
+  id: string,
+  field1: string,
+  field2: string
+};
+
+type Props = {
+  fields: Array<'id' | 'field1' | 'field2'>,
+  data: Array<Fields>,
+  sortKey: string,
+  sortAsc: boolean
+};
+
+type State = {
+  sortKey: string,
+  sortAsc: boolean,
+  data: Array<Fields>,
+  selectedRow: any,
+  selectedRowId: string,
+  ascSymbol: string,
+  descSymbol: string,
+  sortSymbol: string
+
+};
+
+export default class App extends Component<Props, State> {
+  handleSelectedRow: (any) => void;
+  handleSort: (string) => void;
+
+  constructor({ sortKey, sortAsc, data }) {
     super();
     this.state = {
       sortKey,
-      sortAsc: defaultSortAsc,
-      data: sortObjects(data, sortKey, defaultSortAsc),
+      sortAsc,
+      data: sortObjects(data, sortKey, sortAsc),
       selectedRow: null,
       selectedRowId: '',
       ascSymbol: '\u25B2',
       descSymbol: '\u25BC',
-      sortSymbol: defaultSortAsc ? '\u25B2' : '\u25BC',
+      sortSymbol: sortAsc ? '\u25B2' : '\u25BC',
     };
 
     this.handleSort = this.handleSort.bind(this);
@@ -25,7 +54,7 @@ export default class App extends Component {
     const newSortKey = chosenSortKey;
 
     // set to default values
-    let newSortAsc = this.props.defaultSortAsc;
+    let newSortAsc = this.props.sortAsc;
     let newSortSymbol = (newSortAsc ? this.state.ascSymbol : this.state.descSymbol);
 
     // copy stored data
@@ -62,10 +91,16 @@ export default class App extends Component {
     });
   }
 
-
-  /* =========== render ============ */
-
   render() {
+    const { fields: propsFields } = this.props;
+    const {
+      sortKey: stateSortKey,
+      sortSymbol: stateSortSymbol,
+      data: stateData,
+      selectedRow: stateSelectedRow,
+      selectedRowId: stateSelectedRowId,
+    } = this.state;
+
     return (
       <div id="app">
         <table>
@@ -73,13 +108,13 @@ export default class App extends Component {
           <thead>
             <tr>
               {
-                this.props.fields.map(_field => (
+                propsFields.map(fieldName => (
                   <th
-                    key={`th_${_field}`}
-                    className={this.state.sortKey !== _field ? 'click' : 'click selected-sort-bar'}
-                    onClick={() => { this.handleSort(_field); }}
+                    key={`th_${fieldName}`}
+                    className={stateSortKey === fieldName ? 'click selected-sort-bar' : 'click'}
+                    onClick={() => { this.handleSort(fieldName); }}
                   >
-                    {_field} {this.state.sortKey !== _field ? ' ' : this.state.sortSymbol}
+                    {fieldName} {stateSortKey === fieldName ? stateSortSymbol : ' '}
                   </th>
                 ))
               }
@@ -87,39 +122,30 @@ export default class App extends Component {
           </thead>
           <tbody>
             {
-              this.state.data.map(row => (
-                <tr
-                  key={`row_${row.id}`}
-                  className={this.state.selectedRowId !== (row.id) ? 'click' : 'click clicked-row'}
-                  onClick={() => { this.handleSelectedRow(row); }}
-                >
-                  <td> {row.id} </td>
-                  <td> {row.field1} </td>
-                  <td> {row.field2} </td>
-                </tr>
-              ))
+              stateData.map((row) => {
+                const { id: rowId } = row;
+                return (
+                  <tr
+                    key={`row_${rowId}`}
+                    className={stateSelectedRowId === (rowId) ? 'click clicked-row' : 'click'}
+                    onClick={() => { this.handleSelectedRow(row); }}
+                  >
+                    {
+                      propsFields.map(fieldName => (
+                        <td key={`field_${fieldName}`}> {row[fieldName]} </td>
+                      ))
+                    }
+                  </tr>
+                );
+              })
             }
           </tbody>
         </table>
         {
-          this.state.selectedRow &&
-          <Preview row={this.state.selectedRow} />
+          stateSelectedRow &&
+          <Preview rowData={stateSelectedRow} />
         }
       </div>
     );
   }
 }
-
-
-App.propTypes = {
-  data: arrayOf(
-    shape({
-      id: string.isRequired,
-      field1: string.isRequired,
-      field2: string.isRequired,
-    }),
-  ).isRequired,
-  fields: arrayOf(string).isRequired,
-  sortKey: oneOf(['id', 'field1', 'field2']).isRequired,
-  defaultSortAsc: bool.isRequired,
-};

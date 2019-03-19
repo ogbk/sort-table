@@ -20,7 +20,7 @@ const data = [
 render(
   <App
     sortKey={'field1'}
-    defaultSortAsc
+    sortAsc
     data={data}
     fields={fields}
   />,
