@@ -3,7 +3,7 @@ import { render } from 'react-dom';
 
 import App from './App';
 
-import('../sass/styles.sass');
+require('../sass/styles.sass');
 
 const fields = [
   'id', 'field1', 'field2',

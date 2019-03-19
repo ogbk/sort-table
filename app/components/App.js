@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { string, shape, arrayOf, oneOf, bool } from 'prop-types';
 import Preview from './Preview';
-import { mySortArr } from '../utils/sortAlphaNum';
+import { sortObjects } from '../utils/sortAlphaNum';
 
 export default class App extends Component {
   constructor({ sortKey, defaultSortAsc, data }) {
@@ -9,7 +9,7 @@ export default class App extends Component {
     this.state = {
       sortKey,
       sortAsc: defaultSortAsc,
-      data: mySortArr(data, sortKey, defaultSortAsc),
+      data: sortObjects(data, sortKey, defaultSortAsc),
       selectedRow: null,
       selectedRowId: '',
       ascSymbol: '\u25B2',
@@ -44,7 +44,7 @@ export default class App extends Component {
     // - sortAsc, sortSymbol = set to default values
 
       // re-order data based on new sortKey
-      newData = mySortArr(newData, newSortKey, newSortAsc);
+      newData = sortObjects(newData, newSortKey, newSortAsc);
     }
 
     this.setState({
