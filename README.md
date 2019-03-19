@@ -1,13 +1,15 @@
-# in-progress-react-SPA-table
+# react-table
 
-SPA web page - 
-loads json array into a table, sorts entries by selected field, highlights and displays selected entry
+SPA web page:
+- loads json data into a table
+- sorts data rows by selected field
+- highlights and displays selected row
 
 
 ## Running locally
 
 - `git clone` or download this repository
-- `cd in-progress-react-SPA-table` or `cd in-progress-react-SPA-table-master`
+- `cd react-table` or `cd react-table-master`
 - `npm install`
 - run in dev mode: `npm run dev`
 - run in prod mode: `npm run prod`
@@ -17,3 +19,10 @@ loads json array into a table, sorts entries by selected field, highlights and d
 
 - ESLint `npm run eslint`
 - Sass lint `npm run sass-lint`
+
+
+## Static typechecking with Flow
+
+- Stop flow server `npm run flow stop`
+- Start flow server `npm run flow start`
+- Run flow `npm run flow status`

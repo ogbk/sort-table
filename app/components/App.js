@@ -52,37 +52,36 @@ export default class App extends Component<Props, State> {
     this.handleSelectedRow = this.handleSelectedRow.bind(this);
   }
 
-  handleSort(chosenSortKey: string): void {
-    const newSortKey = chosenSortKey;
+  handleSort(newSortKey: string): void {
+    const { sortAsc: defaultSortAsc } = this.props;
+    const { ascSymbol, descSymbol, sortKey, data, sortAsc } = this.state;
 
-    // set to default values
-    let newSortAsc = this.props.sortAsc;
-    let newSortSymbol = (newSortAsc ? this.state.ascSymbol : this.state.descSymbol);
+    // default values - applied if sortKey changes
+    let newSortAsc = defaultSortAsc;
+    let newSortSymbol = (defaultSortAsc ? ascSymbol : descSymbol);
 
     // copy stored data
-    let newData = [...(this.state.data)];
+    let copyData = [...data];
 
-    // sortKey = same, but
-    // - sortAsc, sortSymbol = changed (NOT default values)
-    if (chosenSortKey === this.state.sortKey) {
-      newSortAsc = !(this.state.sortAsc);
-      newSortSymbol = (this.state.sortAsc ? this.state.descSymbol : this.state.ascSymbol);
+    if (newSortKey === sortKey) {
+      // SAME -- sortKey
+      // TOGGLE -- sortAsc, sortSymbol
 
-      // only reverse array (because sortKey hasn't changed)
-      newData = newData.reverse();
+      newSortAsc = !(sortAsc);
+      newSortSymbol = (sortAsc ? descSymbol : ascSymbol);
+      copyData.reverse();
     } else {
-    // sortKey = changed, so
-    // - sortAsc, sortSymbol = set to default values
+      // CHANGED -- sortKey , so ->
+      // set to DEFAULT VALUES -- sortAsc, sortSymbol
 
-      // re-order data based on new sortKey
-      newData = sortObjects(newData, newSortKey, newSortAsc);
+      copyData = sortObjects(copyData, newSortKey, newSortAsc);
     }
 
     this.setState({
-      sortKey: chosenSortKey,
+      sortKey: newSortKey,
       sortAsc: newSortAsc,
       sortSymbol: newSortSymbol,
-      data: newData,
+      data: copyData,
     });
   }
 
