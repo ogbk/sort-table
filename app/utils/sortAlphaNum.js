@@ -1,99 +1,145 @@
-/**
- ALPHA NUMERIC SORTING
- ========================
-*/
+// @flow
 
-// helper function -> reads sequence of integer in a string
-const readIntFragment = (str, idx) => {
-  let charCounter = idx;
-  let charValue = 0;
-  let RESULT = '';
-  const lenStr = str.length;
-  let isIntValue = true; // flag -> says if current char is an int
+type UnicodeOfChar = {
+  charType: 'CHAR_UNICODE' | 'INT_FRAGMENT',
+  value: number
+};
 
-  while (isIntValue && (charCounter < lenStr)) {
-    charValue = str.charCodeAt(charCounter);
+type StringInfo = {
+  containsInt: boolean,
+  mainString: string,
+  unicodeList: Array<UnicodeOfChar>
+};
 
-    // this char is a number
-    if (charValue <= 57 && charValue >= 48) {
-      RESULT += `${str[charCounter]}`;
-      charCounter += 1;
-    } else {
-      isIntValue = false;
+type Stack = {
+  intBuffer: Array<number>,
+  isReadingInt: boolean
+};
+
+const closeIntBuffer = (stack:Stack, unicodeList: Array<UnicodeOfChar>) => {
+  if (stack.isReadingInt) {
+    unicodeList.push({
+      charType: 'INT_FRAGMENT',
+      value: Number(stack.intBuffer.join('')),
+    });
+  }
+  stack.intBuffer = [];
+  stack.isReadingInt = false;
+};
+
+const createUnicodeList = (mainString: string): StringInfo => {
+  let containsInt: boolean = false;
+  const lenString: number = mainString.length;
+  const unicodeList: Array<UnicodeOfChar> = [];
+
+  const stack:Stack = {
+    intBuffer: [],
+    isReadingInt: false,
+  };
+
+  for (let xval:number, xchar:string, i:number = 0; i < lenString; i += 1) {
+    xchar = mainString[i];
+    xval = mainString.charCodeAt(i);
+
+    if (xval >= 48 && xval <= 57) { // reading numeric char -> an int fragment
+      containsInt = true;
+      stack.intBuffer.push(Number(xchar));
+      stack.isReadingInt = true;
+    } else { // reading non-numeric char
+      closeIntBuffer(stack, unicodeList); // last read char was int
+      unicodeList.push({
+        charType: 'CHAR_UNICODE',
+        value: xval,
+      });
     }
   }
 
-  // return [ <sequence_of_integer_just_read>, <last_index_read> ]
-  return ([(RESULT * 1), (charCounter - 1)]);
+  // parse int buffer in case last read char was int
+  closeIntBuffer(stack, unicodeList);
+
+  return ({
+    containsInt, mainString, unicodeList,
+  });
 };
 
-/* eslint-disable consistent-return */
+const sortUnicodeList = (
+  {
+    sortInfo: {
+      containsInt: containsIntA,
+      mainString: stringA,
+      unicodeList: unicodeListA,
+    },
+  }: {
+      sortInfo: StringInfo
+  },
+  {
+    sortInfo: {
+      containsInt: containsIntB,
+      mainString: stringB,
+      unicodeList: unicodeListB,
+    },
+  }: {
+      sortInfo: StringInfo
+  },
+): number => {
+  if (!containsIntA && !containsIntB) {
+    return (stringA.localeCompare(stringB));
+  }
+  const maxLen = Math.max(unicodeListA.length, unicodeListB.length);
 
-// called by Array.sort => sorts 2 alphanunumeric strings by <orderAsc - bool value>
-const alphaNumSort = (a, b, orderAsc = true) => {
-  const sortOrder = (orderAsc ? 1 : (-1)); // sort order - is multiplied to returned result
-  let valueA = ''; // value of current char in string a
-  let valueB = ''; // value of current char in string b
-  let indexA = 0; // current index of string a
-  let indexB = 0; // current index of string b
-  const lenA = a.length; // length of string a
-  const lenB = b.length; // length of string b
-  const lenMax = (lenA > lenB ? lenA : lenB); // length of longer string
+  for (let i = 0; i < maxLen; i += 1) {
+    // both strings contain same items so far
+    if (!unicodeListA[i]) { return (-1); } // string B is longer
+    if (!unicodeListB[i]) { return 1; } // string A is longer
 
-  while (indexA <= lenMax && indexB <= lenMax) {
-    // end of string a -> it equals or is before string b in 'ASC' order
-    if (indexA === lenA) {
-      return ((-1) * sortOrder);
-    }
+    const { charType: charTypeA, value: valueA } = unicodeListA[i];
+    const { charType: charTypeB, value: valueB } = unicodeListB[i];
 
-    // end of string b -> it equals or is before string a in 'ASC' order
-    if (indexB === lenB) {
-      return (1 * sortOrder);
-    }
-
-    // store char code value of current char
-    valueA = a.charCodeAt(indexA);
-    valueB = b.charCodeAt(indexB);
-
-    // current chars are both numbers
-    if (valueA <= 57 && valueA >= 48 && valueB <= 57 && valueB >= 48) {
-      // reads int position of string
-      const [intFragValueA, intFragIndexA] = readIntFragment(a, indexA);
-      const [intFragValueB, intFragIndexB] = readIntFragment(b, indexB);
-
-      if (intFragValueA !== intFragValueB) {
-        return ((intFragValueA - intFragValueB) * sortOrder);
+    if (charTypeA === charTypeB) {
+      if (valueA !== valueB) {
+        return (valueA - valueB);
       }
-
-      // numbers are equal -> store value of last read index and move on
-      indexA = intFragIndexA;
-      indexB = intFragIndexB;
-    } else if (valueA !== valueB) {
-    // sorting is possible because at least one value is not an int
-      return ((valueA - valueB) * sortOrder);
+    } else if (charTypeA === 'CHAR_UNICODE') {
+      return (valueA - 48);
+    } else if (charTypeB === 'CHAR_UNICODE') {
+      return (valueB - 48);
     }
-
-    // all read characters are equal -> work on next character
-    indexA += 1;
-    indexB += 1;
   }
+  return 0;
 };
 
-/* eslint-ensable consistent-return */
 
-// sort 2 alphanum strings
-const mySort = (list, sortAsc = true) => (
-  list.sort(
-    (a, b) => (alphaNumSort(a, b, sortAsc)),
-  )
-);
+const customSort = (newArr: Array<any>, sortAsc:boolean = true): Array<any> => {
+  const sortFactor = sortAsc ? 1 : -1;
 
-// sort 2 arrays by alphanum attribute <sortKey>
-const mySortArr = (list, sortKey, sortAsc = true) => (
-  list.sort(
-    (a, b) => (alphaNumSort(a[sortKey], b[sortKey], sortAsc)),
-  )
-);
+  newArr.sort((a, b) => (
+    sortUnicodeList(a, b) * sortFactor
+  ));
+  return (
+    newArr.map(({ sortInfo, ...rest }) => (rest))
+  );
+};
 
+const sortStrings = (stringArr: Array<string>, sortAsc:boolean = true):Array<any> => {
+  const newArr:Array<any> = stringArr.map(item => ({
+    sortInfo: (createUnicodeList(item)),
+    item,
+  }));
 
-export { mySort, mySortArr };
+  return (
+    customSort(newArr, sortAsc)
+  );
+};
+
+const sortObjects = (mainArr: Array<any>, sortKey: string, sortAsc:boolean = true):Array<any> => {
+  const newArr:Array<any> = mainArr.map((item:any) => ({
+    sortInfo: (createUnicodeList(item[sortKey])),
+    ...item,
+  }));
+
+  return (
+    customSort(newArr, sortAsc)
+  );
+};
+
+export { sortObjects, sortStrings };
