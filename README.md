@@ -26,3 +26,7 @@ React SPA web page:
 - Stop flow server `npm run flow stop`
 - Start flow server `npm run flow start`
 - Run flow `npm run flow status`
+
+## Testing with jest
+
+- test helper function (app/utils/sortAlphaNum.js): `npm run test`
