@@ -121,7 +121,7 @@ const customSort = (newArr: Array<any>, sortAsc:boolean = true): Array<any> => {
 };
 
 const sortStrings = (stringArr: Array<string>, sortAsc:boolean = true):Array<any> => {
-  const newArr:Array<any> = stringArr.map(item => ({
+  const newArr:Array<any> = stringArr.map((item) => ({
     sortInfo: (createUnicodeList(item)),
     item,
   }));

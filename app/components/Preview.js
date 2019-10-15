@@ -13,9 +13,15 @@ const Preview = ({
   <div id="preview">
     <h2>{ id }</h2>
     <br />
-    <h4>field1: { field1 }</h4>
+    <h4>
+      field1:
+      { field1 }
+    </h4>
     <br />
-    <h4>field2: { field2 }</h4>
+    <h4>
+      field2:
+      { field2 }
+    </h4>
   </div>
 );
 

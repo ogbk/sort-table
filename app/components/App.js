@@ -32,6 +32,7 @@ type State = {
 
 export default class App extends Component<Props, State> {
   handleSort: (string) => void;
+
   handleSelectedRow: (Fields) => void;
 
   constructor({ sortKey, sortAsc, data }: Props) {
@@ -54,7 +55,13 @@ export default class App extends Component<Props, State> {
 
   handleSort(newSortKey: string): void {
     const { sortAsc: defaultSortAsc } = this.props;
-    const { ascSymbol, descSymbol, sortKey, data, sortAsc } = this.state;
+    const {
+      ascSymbol,
+      descSymbol,
+      sortKey,
+      data,
+      sortAsc,
+    } = this.state;
 
     // default values - applied if sortKey changes
     let newSortAsc = defaultSortAsc;
@@ -111,13 +118,14 @@ export default class App extends Component<Props, State> {
           <thead>
             <tr>
               {
-                propsFields.map(fieldName => (
+                propsFields.map((fieldName) => (
                   <th
                     key={`th_${fieldName}`}
                     className={fieldName === stateSortKey ? 'click selected-sort-bar' : 'click'}
                     onClick={() => { this.handleSort(fieldName); }}
                   >
-                    {fieldName} {fieldName === stateSortKey ? stateSortSymbol : ' '}
+                    {fieldName}
+                    {fieldName === stateSortKey ? stateSortSymbol : ' '}
                   </th>
                 ))
               }
@@ -134,8 +142,10 @@ export default class App extends Component<Props, State> {
                     onClick={() => { this.handleSelectedRow(row); }}
                   >
                     {
-                      propsFields.map(fieldName => (
-                        <td key={`field_${fieldName}`}> {row[fieldName]} </td>
+                      propsFields.map((fieldName) => (
+                        <td key={`field_${fieldName}`}>
+                          {row[fieldName]}
+                        </td>
                       ))
                     }
                   </tr>
@@ -145,8 +155,8 @@ export default class App extends Component<Props, State> {
           </tbody>
         </table>
         {
-          stateShowRowData &&
-          <Preview rowData={stateSelectedRow} />
+          stateShowRowData
+          && <Preview rowData={stateSelectedRow} />
         }
       </div>
     );
