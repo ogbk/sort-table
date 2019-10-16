@@ -17,9 +17,11 @@ type EnhancedArray = Array<{
 }>;
 
 type Stack = {
-  intBuffer: Array<number>,
+  intBuffer: Array<string>,
   isReadingInt: boolean
 };
+
+const INT_PREFIXES: Array<string> = ['.', '-'];
 
 const closeIntBuffer = (stack:Stack, unicodeList: Array<UnicodeOfChar>) => {
   if (stack.isReadingInt) {
@@ -96,13 +98,26 @@ const createUnicodeList = (mainString: string): StringInfo => {
     isReadingInt: false,
   };
 
-  for (let xval:number, xchar:string, i:number = 0; i < lenString; i += 1) {
+  for (
+    let xval:number, xchar:string, i:number = 0, nextIndex:number, nextIndexExists:boolean;
+    i < lenString;
+    i += 1
+  ) {
     xchar = mainString[i];
     xval = mainString.charCodeAt(i);
 
-    if (xval >= 48 && xval <= 57) { // reading numeric char -> an int fragment
+    nextIndex = i + 1;
+    nextIndexExists = lenString > (i + 1);
+
+    if (
+      (xval >= 48 && xval <= 57)
+      || ((INT_PREFIXES.includes(xchar) && nextIndexExists)
+          && ((mainString.charCodeAt(nextIndex)) >= 48)
+          && ((mainString.charCodeAt(nextIndex)) <= 57)
+      )
+    ) { // reading numeric char -> an int fragment
       containsInt = true;
-      stack.intBuffer.push(Number(xchar));
+      stack.intBuffer.push(xchar);
       stack.isReadingInt = true;
     } else { // reading non-numeric char
       closeIntBuffer(stack, unicodeList); // last read char was int
