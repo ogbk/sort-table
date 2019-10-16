@@ -11,6 +11,11 @@ type StringInfo = {
   unicodeList: Array<UnicodeOfChar>
 };
 
+type EnhancedArray = Array<{
+  sortInfo: StringInfo,
+  item: any
+}>;
+
 type Stack = {
   intBuffer: Array<number>,
   isReadingInt: boolean
@@ -25,6 +30,60 @@ const closeIntBuffer = (stack:Stack, unicodeList: Array<UnicodeOfChar>) => {
   }
   stack.intBuffer = [];
   stack.isReadingInt = false;
+};
+
+
+const sortUnicodeList = (sortInfoA: StringInfo, sortInfoB: StringInfo): number => {
+  const {
+    containsInt: containsIntA,
+    mainString: stringA,
+    unicodeList: unicodeListA,
+  } = sortInfoA;
+
+  const {
+    containsInt: containsIntB,
+    mainString: stringB,
+    unicodeList: unicodeListB,
+  } = sortInfoB;
+
+  if (!containsIntA && !containsIntB) {
+    return (stringA.localeCompare(stringB));
+  }
+  const maxLen = Math.max(unicodeListA.length, unicodeListB.length);
+
+  for (let i = 0; i < maxLen; i += 1) {
+    // both strings contain same items so far
+    if (!unicodeListA[i]) { return (-1); } // string B is longer
+    if (!unicodeListB[i]) { return 1; } // string A is longer
+
+    const { charType: charTypeA, value: valueA } = unicodeListA[i];
+    const { charType: charTypeB, value: valueB } = unicodeListB[i];
+
+    if (charTypeA === charTypeB) {
+      if (valueA !== valueB) {
+        return (valueA - valueB);
+      }
+    } else if (charTypeA === 'CHAR_UNICODE') {
+      return (valueA - 48);
+    } else if (charTypeB === 'CHAR_UNICODE') {
+      return (valueB - 48);
+    }
+  }
+  return 0;
+};
+
+const customSort = (newArr: EnhancedArray, sortAsc:boolean = true): Array<any> => {
+  const sortFactor = sortAsc ? 1 : -1;
+
+  // after sorting, delete property <sortInfo>
+
+  newArr.sort(({ sortInfo: sortInfoA }, { sortInfo: sortInfoB }) => (
+    sortUnicodeList(sortInfoA, sortInfoB) * sortFactor
+  ));
+
+  return (
+    newArr.map(({ sortInfo, ...rest }) => (rest))
+  );
 };
 
 const createUnicodeList = (mainString: string): StringInfo => {
@@ -62,66 +121,10 @@ const createUnicodeList = (mainString: string): StringInfo => {
   });
 };
 
-const sortUnicodeList = (
-  {
-    sortInfo: {
-      containsInt: containsIntA,
-      mainString: stringA,
-      unicodeList: unicodeListA,
-    },
-  }: {
-      sortInfo: StringInfo
-  },
-  {
-    sortInfo: {
-      containsInt: containsIntB,
-      mainString: stringB,
-      unicodeList: unicodeListB,
-    },
-  }: {
-      sortInfo: StringInfo
-  },
-): number => {
-  if (!containsIntA && !containsIntB) {
-    return (stringA.localeCompare(stringB));
-  }
-  const maxLen = Math.max(unicodeListA.length, unicodeListB.length);
-
-  for (let i = 0; i < maxLen; i += 1) {
-    // both strings contain same items so far
-    if (!unicodeListA[i]) { return (-1); } // string B is longer
-    if (!unicodeListB[i]) { return 1; } // string A is longer
-
-    const { charType: charTypeA, value: valueA } = unicodeListA[i];
-    const { charType: charTypeB, value: valueB } = unicodeListB[i];
-
-    if (charTypeA === charTypeB) {
-      if (valueA !== valueB) {
-        return (valueA - valueB);
-      }
-    } else if (charTypeA === 'CHAR_UNICODE') {
-      return (valueA - 48);
-    } else if (charTypeB === 'CHAR_UNICODE') {
-      return (valueB - 48);
-    }
-  }
-  return 0;
-};
-
-
-const customSort = (newArr: Array<any>, sortAsc:boolean = true): Array<any> => {
-  const sortFactor = sortAsc ? 1 : -1;
-
-  newArr.sort((a, b) => (
-    sortUnicodeList(a, b) * sortFactor
-  ));
-  return (
-    newArr.map(({ sortInfo, ...rest }) => (rest))
-  );
-};
-
 const sortStrings = (stringArr: Array<string>, sortAsc:boolean = true):Array<any> => {
-  const newArr:Array<any> = stringArr.map((item) => ({
+  // add property <sortInfo> to new array
+
+  const newArr:EnhancedArray = stringArr.map((item) => ({
     sortInfo: (createUnicodeList(item)),
     item,
   }));
@@ -132,7 +135,9 @@ const sortStrings = (stringArr: Array<string>, sortAsc:boolean = true):Array<any
 };
 
 const sortObjects = (mainArr: Array<any>, sortKey: string, sortAsc:boolean = true):Array<any> => {
-  const newArr:Array<any> = mainArr.map((item:any) => ({
+  // add property <sortInfo> to new array
+
+  const newArr:EnhancedArray = mainArr.map((item:any) => ({
     sortInfo: (createUnicodeList(item[sortKey])),
     ...item,
   }));
