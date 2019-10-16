@@ -5,10 +5,6 @@ import App from './App';
 
 require('../sass/styles.sass');
 
-const fields = [
-  'id', 'field1', 'field2',
-];
-
 const data = [
   { id: '1', field1: 'a23djkjshd', field2: 'cukdokl' },
   { id: '5', field1: '23djkjshd', field2: '36cukdokl' },
@@ -19,10 +15,10 @@ const data = [
 
 render(
   <App
-    sortKey="field1"
-    sortAsc
-    data={data}
-    fields={fields}
+    defaultSortKey="id"
+    defaultSortAsc
+    defaultData={data}
+    fields={['id', 'field1', 'field2']}
   />,
   window.document.getElementById('root'),
 );

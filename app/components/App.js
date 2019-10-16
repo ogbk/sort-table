@@ -2,6 +2,7 @@
 
 import React, { Component } from 'react';
 import Preview from './Preview';
+// import { basicSortObjects } from '../utils/sortBasic';
 import { sortObjects } from '../utils/sortAlphaNum';
 
 export type Fields = {
@@ -12,9 +13,9 @@ export type Fields = {
 
 type Props = {
   fields: Array<'id' | 'field1' | 'field2'>,
-  data: Array<Fields>,
-  sortKey: string,
-  sortAsc: boolean
+  defaultData: Array<Fields>,
+  defaultSortKey: string,
+  defaultSortAsc: boolean
 };
 
 type State = {
@@ -24,10 +25,10 @@ type State = {
   showRowData: boolean,
   selectedRow: Fields,
   selectedRowId: string,
-  ascSymbol: string,
-  descSymbol: string,
-  sortSymbol: string
-
+  symbolAsc: {
+    true: string,
+    false: string
+  },
 };
 
 export default class App extends Component<Props, State> {
@@ -35,18 +36,19 @@ export default class App extends Component<Props, State> {
 
   handleSelectedRow: (Fields) => void;
 
-  constructor({ sortKey, sortAsc, data }: Props) {
+  constructor({ defaultSortKey, defaultSortAsc, defaultData }: Props) {
     super();
     this.state = {
-      sortKey,
-      sortAsc,
-      data: sortObjects(data, sortKey, sortAsc),
+      sortKey: defaultSortKey,
+      sortAsc: defaultSortAsc,
+      data: sortObjects(defaultData, defaultSortKey, defaultSortAsc),
+      symbolAsc: {
+        true: '\u25B2',
+        false: '\u25BC',
+      },
       showRowData: false,
       selectedRow: {},
       selectedRowId: '',
-      ascSymbol: '\u25B2',
-      descSymbol: '\u25BC',
-      sortSymbol: sortAsc ? '\u25B2' : '\u25BC',
     };
 
     this.handleSort = this.handleSort.bind(this);
@@ -54,42 +56,25 @@ export default class App extends Component<Props, State> {
   }
 
   handleSort(newSortKey: string): void {
-    const { sortAsc: defaultSortAsc } = this.props;
+    const { defaultSortAsc, defaultData } = this.props;
     const {
-      ascSymbol,
-      descSymbol,
-      sortKey,
-      data,
-      sortAsc,
+      sortKey: currentSortKey,
+      sortAsc: currentSortAsc,
+      data: currentData,
     } = this.state;
 
-    // default values - applied if sortKey changes
-    let newSortAsc = defaultSortAsc;
-    let newSortSymbol = (defaultSortAsc ? ascSymbol : descSymbol);
-
-    // copy stored data
-    let copyData = [...data];
-
-    if (newSortKey === sortKey) {
-      // SAME -- sortKey
-      // TOGGLE -- sortAsc, sortSymbol
-
-      newSortAsc = !(sortAsc);
-      newSortSymbol = (sortAsc ? descSymbol : ascSymbol);
-      copyData.reverse();
+    if (currentSortKey === newSortKey) {
+      this.setState({
+        sortAsc: !currentSortAsc,
+        data: currentData.reverse(),
+      });
     } else {
-      // CHANGED -- sortKey , so ->
-      // set to DEFAULT VALUES -- sortAsc, sortSymbol
-
-      copyData = sortObjects(copyData, newSortKey, newSortAsc);
+      this.setState({
+        sortAsc: defaultSortAsc,
+        sortKey: newSortKey,
+        data: sortObjects(defaultData, newSortKey, defaultSortAsc),
+      });
     }
-
-    this.setState({
-      sortKey: newSortKey,
-      sortAsc: newSortAsc,
-      sortSymbol: newSortSymbol,
-      data: copyData,
-    });
   }
 
   handleSelectedRow(row: Fields): void {
@@ -104,8 +89,9 @@ export default class App extends Component<Props, State> {
     const { fields: propsFields } = this.props;
     const {
       sortKey: stateSortKey,
-      sortSymbol: stateSortSymbol,
+      sortAsc,
       data: stateData,
+      symbolAsc,
       showRowData: stateShowRowData,
       selectedRow: stateSelectedRow,
       selectedRowId: stateSelectedRowId,
@@ -125,7 +111,7 @@ export default class App extends Component<Props, State> {
                     onClick={() => { this.handleSort(fieldName); }}
                   >
                     {fieldName}
-                    {fieldName === stateSortKey ? stateSortSymbol : ' '}
+                    {fieldName === stateSortKey ? symbolAsc[String(sortAsc)] : ' '}
                   </th>
                 ))
               }
