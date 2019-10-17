@@ -9,7 +9,7 @@ React SPA web page:
 ## Running locally
 
 - `git clone` or download this repository
-- `cd react-table` or `cd react-table-master`
+- `cd sort-table` or `cd sort-table-master`
 - `npm install`
 - run in dev mode: `npm run dev`
 - run in prod mode: `npm run prod`
