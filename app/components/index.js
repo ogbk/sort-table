@@ -13,12 +13,14 @@ const data = [
   { id: '4', field1: '9c3djkjshd', field2: '07cukdokl' },
 ];
 
+const fields = Object.keys(data[0]);
+
 render(
   <App
     defaultSortKey="id"
     defaultSortAsc
     defaultData={data}
-    fields={['id', 'field1', 'field2']}
+    fields={fields}
   />,
   window.document.getElementById('root'),
 );

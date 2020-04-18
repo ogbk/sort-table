@@ -22,9 +22,8 @@ type State = {
   sortKey: string,
   sortAsc: boolean,
   data: Array<Fields>,
-  showRowData: boolean,
+  previewOn: boolean,
   selectedRow: Fields,
-  selectedRowId: string,
   symbolAsc: {
     true: string,
     false: string
@@ -42,14 +41,13 @@ export default class App extends Component<Props, State> {
         true: '\u25B2',
         false: '\u25BC',
       },
-      showRowData: false,
+      previewOn: false,
       selectedRow: {},
-      selectedRowId: '',
     };
   })();
 
 
-  handleSort = (newSortKey: string): void => {
+  sortByColumn = (newSortKey: string): void => {
     const { defaultSortAsc, defaultData } = this.props;
     const {
       sortKey: currentSortKey,
@@ -71,24 +69,22 @@ export default class App extends Component<Props, State> {
     }
   }
 
-  handleSelectedRow = (row: Fields): void => {
+  showPreview = (row: Fields): void => {
     this.setState({
-      showRowData: true,
+      previewOn: true,
       selectedRow: row,
-      selectedRowId: row.id,
     });
   }
 
   render() {
-    const { fields: propsFields } = this.props;
+    const { fields: columns } = this.props;
     const {
-      sortKey: stateSortKey,
+      sortKey,
       sortAsc,
-      data: stateData,
+      data,
       symbolAsc,
-      showRowData: stateShowRowData,
-      selectedRow: stateSelectedRow,
-      selectedRowId: stateSelectedRowId,
+      previewOn,
+      selectedRow,
     } = this.state;
 
     return (
@@ -98,14 +94,14 @@ export default class App extends Component<Props, State> {
           <thead>
             <tr>
               {
-                propsFields.map((fieldName) => (
+                columns.map((columnName) => (
                   <th
-                    key={`th_${fieldName}`}
-                    className={fieldName === stateSortKey ? 'click selected-sort-bar' : 'click'}
-                    onClick={() => { this.handleSort(fieldName); }}
+                    key={`th_${columnName}`}
+                    className={columnName === sortKey ? 'click selected-sort-bar' : 'click'}
+                    onClick={() => { this.sortByColumn(columnName); }}
                   >
-                    {fieldName}
-                    {fieldName === stateSortKey ? symbolAsc[String(sortAsc)] : ' '}
+                    {columnName}
+                    {columnName === sortKey ? symbolAsc[String(sortAsc)] : ' '}
                   </th>
                 ))
               }
@@ -113,18 +109,18 @@ export default class App extends Component<Props, State> {
           </thead>
           <tbody>
             {
-              stateData.map((row) => {
+              data.map((row) => {
                 const { id: rowId } = row;
                 return (
                   <tr
                     key={`row_${rowId}`}
-                    className={rowId === stateSelectedRowId ? 'click clicked-row' : 'click'}
-                    onClick={() => { this.handleSelectedRow(row); }}
+                    className={rowId === selectedRow.id ? 'click clicked-row' : 'click'}
+                    onClick={() => { this.showPreview(row); }}
                   >
                     {
-                      propsFields.map((fieldName) => (
-                        <td key={`field_${fieldName}`}>
-                          {row[fieldName]}
+                      columns.map((columnName) => (
+                        <td key={`field_${columnName}`}>
+                          {row[columnName]}
                         </td>
                       ))
                     }
@@ -135,8 +131,8 @@ export default class App extends Component<Props, State> {
           </tbody>
         </table>
         {
-          stateShowRowData
-          && <Preview rowData={stateSelectedRow} />
+          previewOn
+          && <Preview rowData={selectedRow} />
         }
       </div>
     );
