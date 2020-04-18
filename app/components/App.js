@@ -32,13 +32,9 @@ type State = {
 };
 
 export default class App extends Component<Props, State> {
-  handleSort: (string) => void;
-
-  handleSelectedRow: (Fields) => void;
-
-  constructor({ defaultSortKey, defaultSortAsc, defaultData }: Props) {
-    super();
-    this.state = {
+  state:State = (() => {
+    const { defaultSortKey, defaultSortAsc, defaultData } = this.props;
+    return {
       sortKey: defaultSortKey,
       sortAsc: defaultSortAsc,
       data: sortObjects(defaultData, defaultSortKey, defaultSortAsc),
@@ -50,12 +46,10 @@ export default class App extends Component<Props, State> {
       selectedRow: {},
       selectedRowId: '',
     };
+  })();
 
-    this.handleSort = this.handleSort.bind(this);
-    this.handleSelectedRow = this.handleSelectedRow.bind(this);
-  }
 
-  handleSort(newSortKey: string): void {
+  handleSort = (newSortKey: string): void => {
     const { defaultSortAsc, defaultData } = this.props;
     const {
       sortKey: currentSortKey,
@@ -77,7 +71,7 @@ export default class App extends Component<Props, State> {
     }
   }
 
-  handleSelectedRow(row: Fields): void {
+  handleSelectedRow = (row: Fields): void => {
     this.setState({
       showRowData: true,
       selectedRow: row,
