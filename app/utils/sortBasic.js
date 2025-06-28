@@ -1,5 +1,3 @@
-// @flow
-
 const basicSortObjects = (
   mainArr: Array<any>,
   sortKey: string,

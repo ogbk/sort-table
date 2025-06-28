@@ -1,5 +1,3 @@
-// @flow
-
 type UnicodeOfChar = {
   charType: 'CHAR_UNICODE' | 'INT_FRAGMENT',
   value: number
