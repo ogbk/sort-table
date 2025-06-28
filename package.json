@@ -2,7 +2,7 @@
   "name": "react-table",
   "version": "1.0.0",
   "description": "Simple react table",
-  "main": "index.js",
+  "main": "index.tsx",
   "scripts": {
     "dev": "webpack-dev-server --hot --open",
     "serve": "webpack serve --open",

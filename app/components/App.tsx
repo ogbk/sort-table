@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import Preview from './Preview';
+import Preview from './Preview.tsx';
 // import { basicSortObjects } from '../utils/sortBasic';
-import { sortObjects } from '../utils/sortAlphaNum';
+import { sortObjects } from '../utils/sortAlphaNum.ts';
 
 export type Fields = {
   id: string,
