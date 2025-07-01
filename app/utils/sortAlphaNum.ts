@@ -82,7 +82,7 @@ const customSort = (newArr: EnhancedArray, sortAsc:boolean = true): Array<any> =
   ));
 
   return (
-    newArr.map(({ sortInfo, ...rest }) => (rest))
+    newArr.map(({ sortInfo, ...rest }) => (rest))     // eslint-disable-line
   );
 };
 
