@@ -7,6 +7,7 @@ export default tseslint.config({
     tseslint.configs.recommended,
   ],
   ignores: [
+    '__tests__/*',
     'webpack.config.js',
     'html5shiv.min.js'
   ],
