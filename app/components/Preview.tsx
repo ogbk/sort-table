@@ -1,5 +1,5 @@
 import React from 'react';
-import type { Fields } from './App';
+import type {Fields} from '../utils/types';
 
 const Preview = ({
   rowData: {

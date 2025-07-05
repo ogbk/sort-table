@@ -2,12 +2,9 @@ import React, { Component } from 'react';
 import Preview from './Preview.tsx';
 // import { basicSortObjects } from '../utils/sortBasic';
 import { sortObjects } from '../utils/sortAlphaNum.ts';
+import type {Fields} from '../utils/types';
 
-export type Fields = {
-  id: string,
-  field1: string,
-  field2: string
-};
+
 
 type Props = {
   fields: Array<'id' | 'field1' | 'field2'>,
