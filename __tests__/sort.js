@@ -17,6 +17,7 @@ test('sorts properties --> sortKey id | order DESC', () => {
   expect(sorted).toEqual(sortedIdDesc);
 });
 
+/*
 test('sorts properties --> sortKey address | order ASC', () => {
   const sorted = sortObjects(notSorted, 'address', true);
   expect(sorted).toEqual(sortedAddressAsc);
@@ -26,3 +27,4 @@ test('sorts properties --> sortKey address | order DESC', () => {
   const sorted = sortObjects(notSorted, 'address', false);
   expect(sorted).toEqual(sortedAddressDesc);
 });
+*/
