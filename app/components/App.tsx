@@ -14,8 +14,8 @@ const App = () => {
   const [selectedRow, setSelectedRow] = useState<Fields>();
 
   const symbolAsc = {
-    true: '\u25B2',
-    false: '\u25BC',
+    'true': '\u25B2',
+    'false': '\u25BC',
   };
 
   const sortByColumn = (selectedColumn: string) => {
@@ -47,7 +47,10 @@ const App = () => {
                   onClick={() => { sortByColumn(columnName); }}
                 >
                   {columnName}
-                  {columnName === sortColumn ? symbolAsc[String(sortAsc)] : ' '}
+                  
+                  { //@ts-ignore-error
+                    columnName === sortColumn ? symbolAsc[String(sortAsc)] : ' '
+                  }
                 </th>
               ))
             }
@@ -66,7 +69,10 @@ const App = () => {
                   {
                     columns.map((columnName) => (
                       <td key={`field_${columnName}`}>
-                        {row[columnName]}
+                        {
+                          //@ts-ignore-error 
+                          row[columnName]
+                        }
                       </td>
                     ))
                   }
