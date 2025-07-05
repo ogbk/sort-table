@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import Preview from './Preview.tsx';
-// import { basicSortObjects } from '../utils/sortBasic';
 import { sortObjects } from '../utils/sortAlphaNum.ts';
 import type {Fields} from '../utils/types';
 
